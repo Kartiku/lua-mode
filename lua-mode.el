@@ -2099,6 +2099,8 @@ Otherwise, return START."
                   (lua-make-lua-string lua-file)
                   lineno)))
     (lua-send-string command)
+    (when (eq system-type 'windows-nt)
+      (lua-send-string "io.flush()\n"))
     (when lua-always-show (lua-show-process-buffer))))
 
 (defun lua-prompt-line ()
