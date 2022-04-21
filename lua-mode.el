@@ -2047,6 +2047,12 @@ If `lua-process' is nil or dead, start a new process first."
   (interactive)
   (lua-send-region (line-beginning-position) (line-end-position)))
 
+(defun lua-send-current-line-raw ()
+  "Send current line to the Lua process, found in `lua-process'.
+If `lua-process' is nil or dead, start a new process first."
+  (interactive)
+  (lua-send-region-raw (line-beginning-position) (line-end-position)))
+
 (defun lua-send-defun (pos)
   "Send the function definition around point to the Lua process."
   (interactive "d")
@@ -2099,6 +2105,15 @@ Otherwise, return START."
                   (lua-make-lua-string lua-file)
                   lineno)))
     (lua-send-string command)
+    (when (eq system-type 'windows-nt)
+      (lua-send-string "io.flush()\n"))
+    (when lua-always-show (lua-show-process-buffer))))
+
+(defun lua-send-region-raw (start end)
+  (interactive "r")
+  (setq start (lua-maybe-skip-shebang-line start))
+  (let* ((region-str (buffer-substring-no-properties start end)))
+    (lua-send-string region-str)
     (when (eq system-type 'windows-nt)
       (lua-send-string "io.flush()\n"))
     (when lua-always-show (lua-show-process-buffer))))
