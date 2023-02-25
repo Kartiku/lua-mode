@@ -2094,13 +2094,9 @@ Otherwise, return START."
          (command
           ;; Print empty line before executing the code so that the first line
           ;; of output doesn't end up on the same line as current prompt.
-          (format "print(''); luamode_loadstring(%s, %s, %s);\n"
-                  (lua-make-lua-string region-str)
-                  (lua-make-lua-string lua-file)
-                  lineno)))
+          (format "print(''); a = function()\n%s\nend\na()\nio.flush();\n"
+                  region-str)))
     (lua-send-string command)
-    (when (eq system-type 'windows-nt)
-     (lua-send-string "io.flush()\n"))
     (when lua-always-show (lua-show-process-buffer))))
 
 (defun lua-prompt-line ()
